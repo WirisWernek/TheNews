@@ -11,18 +11,14 @@ import {
 	Stack,
 	NativeBaseProvider,
 } from 'native-base';
+import Noticia from '../../models/Noticia';
 
 type Props = {
-	tag: string,
-	titulo: string,
-	dataDePublicacao: string,
-	texto: string,
-	tempoMedioLeitura: string,
-	imagem: string,
+	noticia: Noticia,
 };
 
-export function Card({ tag, titulo, dataDePublicacao, texto, tempoMedioLeitura, imagem }: Props) {
-	return <Box alignItems="center" safeArea>
+export function Card({noticia }: Props) {
+	return <Box alignItems="center" safeArea marginBottom={2}>
 		<Box maxW="80" rounded="lg" overflow="hidden" borderColor="coolGray.200" borderWidth="1" _dark={{
 			borderColor: "coolGray.600",
 			backgroundColor: "gray.700"
@@ -35,7 +31,7 @@ export function Card({ tag, titulo, dataDePublicacao, texto, tempoMedioLeitura, 
 			<Box>
 				<AspectRatio w="100%" ratio={16 / 9}>
 					<Image source={{
-						uri: imagem
+						uri: noticia.imagem
 					}} alt="image" />
 				</AspectRatio>
 				<Center bg="violet.500" _dark={{
@@ -45,31 +41,31 @@ export function Card({ tag, titulo, dataDePublicacao, texto, tempoMedioLeitura, 
 					fontWeight: "700",
 					fontSize: "xs"
 				}} position="absolute" bottom="0" px="3" py="1.5">
-					{tag}
+					{noticia.tag}
 				</Center>
 			</Box>
 			<Stack p="4" space={3}>
 				<Stack space={2}>
 					<Heading size="md" ml="-1">
-						{titulo}
+						{noticia.titulo}
 					</Heading>
 					<Text fontSize="xs" _light={{
 						color: "violet.500"
 					}} _dark={{
 						color: "violet.400"
 					}} fontWeight="500" ml="-0.5" mt="-1">
-						{dataDePublicacao}
+						{noticia.dataDePublicacao}
 					</Text>
 				</Stack>
 				<Text fontWeight="400">
-					{texto}
+					{noticia.texto}
 				</Text>
 				<HStack alignItems="center" space={4} justifyContent="space-between">
 					<HStack alignItems="center">
 						<Text color="coolGray.600" _dark={{
 							color: "warmGray.200"
 						}} fontWeight="400">
-							{tempoMedioLeitura}
+							{noticia.tempoMedioLeitura}
 						</Text>
 					</HStack>
 				</HStack>

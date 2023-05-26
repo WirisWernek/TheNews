@@ -1,11 +1,13 @@
 import React, { useLayoutEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { Box, Heading, AspectRatio, Image, Text, Center, HStack, Stack, NativeBaseProvider, FlatList } from "native-base";
 
 function Login() {
   return (
-    <View>
-      <Text>Login</Text>
-    </View>
+    <NativeBaseProvider>
+      <Box safeArea alignItems="center">
+        <Heading>Perfil</Heading>
+      </Box>
+    </NativeBaseProvider>
   );
 }
 

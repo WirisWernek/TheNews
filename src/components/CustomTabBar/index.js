@@ -48,8 +48,13 @@ export default function CustomTabBar({ state, descriptors, navigation }) {
               onLongPress={onLongPress}
               style={styles.buttonTab}
             >
-              <View style={{alignItems:"center", padding: 4,}}>
-                <View style={[styles.innerButton,{backgroundColor: isFocused ? "#f8e2fd" : "transparent", }]}>
+              <View style={{ alignItems: "center", padding: 4 }}>
+                <View
+                  style={[
+                    styles.innerButton,
+                    { backgroundColor: isFocused ? "#f8e2fd" : "transparent" },
+                  ]}
+                >
                   <MaterialCommunityIcons
                     name={options.tabBarIcon}
                     size={40}
@@ -71,7 +76,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   content: {
-	borderRadius: 99,
+    borderRadius: 99,
     flexDirection: "row",
     marginBottom: Platform.OS === "ios" ? 38 : 24,
     alignItems: "center",
@@ -86,16 +91,15 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-	shadowOpacity: 0.2,
-	shadowRadius: 3.80
+    shadowOpacity: 0.2,
+    shadowRadius: 3.8,
   },
-  buttonTab:{
-	justifyContent:"center",
-	alignItems:"center",
-
+  buttonTab: {
+    justifyContent: "center",
+    alignItems: "center",
   },
-  innerButton:{
-	padding: 8, 
-	borderRadius:99,
-  }
+  innerButton: {
+    padding: 8,
+    borderRadius: 99,
+  },
 });

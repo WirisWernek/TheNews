@@ -10,7 +10,6 @@ import {
   MaterialIcons,
   AntDesign,
 } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function CustomTabBar({ state, descriptors, navigation }) {
   return (
@@ -47,6 +46,7 @@ export default function CustomTabBar({ state, descriptors, navigation }) {
               onPress={onPress}
               onLongPress={onLongPress}
               style={styles.buttonTab}
+			  key={index}
             >
               <View style={{ alignItems: "center", padding: 4 }}>
                 <View

@@ -1,7 +1,8 @@
 import React, { useLayoutEffect, useState } from "react";
-import { Box, Heading, AspectRatio, Image, Text, Center, HStack, Stack, NativeBaseProvider, FlatList } from "native-base";
+import { Box, Heading, AspectRatio, Image, Text, Center, HStack, Stack, NativeBaseProvider } from "native-base";
 import { Card } from '../components/Card/Card';
 import Noticia from "../models/Noticia";
+import { FlatList } from "react-native";
 
 function Home() {
 	let tag: string = "PHOTOS";
@@ -24,7 +25,7 @@ function Home() {
 	let teste = [0,1,2,3,4,5,6];
 	return (
 		<NativeBaseProvider >
-			<Box safeArea alignItems="center">
+			<Box flex={1} safeArea alignItems="center">
 				<Heading>Notícias</Heading>
 				<FlatList
 				data={teste}
@@ -33,7 +34,7 @@ function Home() {
 				)}
 				/>
 			</Box>
-		</NativeBaseProvider>
+		</NativeBaseProvider>	
 	);
 }
 

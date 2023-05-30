@@ -1,4 +1,4 @@
-export default class Noticia {
+export default class Noticia extends Object{
 	tag: string = "";
 	titulo: string = "";
 	dataDePublicacao: string = "";

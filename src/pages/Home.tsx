@@ -1,41 +1,51 @@
-import React, { useLayoutEffect, useState } from "react";
-import { Box, Heading, AspectRatio, Image, Text, Center, HStack, Stack, NativeBaseProvider } from "native-base";
+import React, { useEffect, useState } from "react";
+import { Box, Heading, NativeBaseProvider } from "native-base";
 import { Card } from '../components/Card/Card';
-import Noticia from "../models/Noticia";
-import { FlatList } from "react-native";
+import { FlatList, StyleSheet } from "react-native";
+import { collection, onSnapshot } from "firebase/firestore";
+import { FIREBASE_DB } from "../../firebaseConfig";
 
 function Home() {
-	let tag: string = "PHOTOS";
-	let titulo: string = "The Garden City";
-	let dataDePublicacao: string = "Hoje";
-	let texto: string = "Bengaluru (also called Bangalore) is the center of India's high-tech industry. The city is also known for its parks and nightlife.";
-	let tempoMedioLeitura: string = "6 mins ago";
-	let imagem: string = "https://reactnative.dev/img/tiny_logo.png";
-	let imagem2: string = "https://cbissn.ibict.br/images/phocagallery/galeria2/thumbs/phoca_thumb_l_image03_grd.png";
+	const [noticia, setNoticia] = useState('');
+    const [noticias, setNoticias] = useState<any[]>([]);
 
-	let noticia = new Noticia();
-	noticia.tag = tag;
-	noticia.titulo = titulo;
-	noticia.dataDePublicacao = dataDePublicacao;
-	noticia.texto = texto;
-	noticia.imagem = imagem2;
-	noticia.tempoMedioLeitura = tempoMedioLeitura;
+	useEffect(() => {
+        const NoticiasRef = collection(FIREBASE_DB, 'Noticias');
 
+        const subscriber = onSnapshot(NoticiasRef, {
+            next: (snapshot) => {
+                const noticias: any[] = [];
+                snapshot.docs.forEach(doc => {
+                    noticias.push({
+                        id: doc.id,
+                        ...doc.data(),
+                    })
+                })
+                setNoticias(noticias);
+            }
+        })
+        return () => subscriber();
+    }, []);
 
-	let teste = [0,1,2,3,4,5,6];
 	return (
 		<NativeBaseProvider >
-			<Box flex={1} safeArea alignItems="center">
+			<Box flex={1} style={styles.box} safeArea alignItems="center">
 				<Heading>Notícias</Heading>
 				<FlatList
-				data={teste}
+				data={noticias}
 				renderItem={({ item }) => (
-					<Card noticia={noticia} />
+					<Card noticia={item} />
 				)}
 				/>
 			</Box>
 		</NativeBaseProvider>	
 	);
 }
+
+const styles = StyleSheet.create({
+	box:{
+		marginBottom: "10vh"
+	},
+});
 
 export default Home;

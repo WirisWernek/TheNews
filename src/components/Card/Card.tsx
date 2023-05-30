@@ -1,25 +1,22 @@
 import * as React from 'react';
-import Constants from 'expo-constants';
 import {
 	Box,
 	Heading,
-	AspectRatio,
-	Image,
 	Text,
 	Center,
 	HStack,
 	Stack,
-	NativeBaseProvider,
 } from 'native-base';
 import Noticia from '../../models/Noticia';
+import { Image, StyleSheet } from 'react-native';
 
 type Props = {
 	noticia: Noticia,
 };
 
-export function Card({noticia }: Props) {
+export function Card({ noticia }: Props) {
 	return <Box alignItems="center" safeArea marginBottom={2}>
-		<Box maxW="95%" rounded="lg" overflow="hidden" borderColor="coolGray.200" borderWidth="1" _dark={{
+		<Box maxW="95%" style={styles.card} width={"95vw"}  overflow="hidden" borderColor="coolGray.200" borderWidth="1" _dark={{
 			borderColor: "coolGray.600",
 			backgroundColor: "gray.700"
 		}} _web={{
@@ -29,11 +26,7 @@ export function Card({noticia }: Props) {
 			backgroundColor: "gray.50"
 		}}>
 			<Box>
-				<AspectRatio w="100%" ratio={16 / 9}>
-					<Image source={{
-						uri: noticia.imagem
-					}} alt="image" />
-				</AspectRatio>
+				<Image style={styles.stretch} source={{ uri: noticia.imagem }} alt="image" />
 				<Center bg="violet.500" _dark={{
 					bg: "violet.400"
 				}} _text={{
@@ -74,3 +67,14 @@ export function Card({noticia }: Props) {
 	</Box>;
 }
 
+const styles = StyleSheet.create({
+	stretch: {
+		height: "60vh",
+		width: "95vw",
+		resizeMode: 'cover',
+		borderRadius: 15,
+	},
+	card:{
+		borderRadius: 15,
+	}
+});

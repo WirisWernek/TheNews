@@ -24,13 +24,13 @@ export function Routes() {
       tabBar={(props) => <CustomTabBar {...props} />}
     >
 	{/* Removido temporariamente */}
-      {/* <Tab.Screen
+      <Tab.Screen
         name="Login"
         component={Login}
         options={{
           tabBarIcon: "account",
         }}
-      /> */}
+      />
       <Tab.Screen
         name="Home"
         component={Home}

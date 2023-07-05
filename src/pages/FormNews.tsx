@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import {
 	Box,
 	Heading,
@@ -13,13 +13,15 @@ import {
 import UploadFoto from "../components/Card/UploadImage";
 import Noticia from "../models/Noticia";
 import { Ionicons } from "@expo/vector-icons";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
-import { addDoc, collection } from "firebase/firestore";
+import { Image, ScrollView, StyleSheet, View, Text } from "react-native";
+import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_STORAGE } from "../../firebaseConfig";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import StorageService from "../services/storage";
 
-export default function NewNews() {
+export default function FormNews({ navigation, route }: any) {
 
+	const [id, setId] = useState(route.params != undefined ? route.params.id : '');
 	let noticia = new Noticia();
 	const [tag, setTag] = useState("");
 	const [titulo, setTitulo] = useState("");
@@ -27,15 +29,84 @@ export default function NewNews() {
 	const [texto, setTexto] = useState("");
 	const [tempoMedioLeitura, setTempoMedioLeitura] = useState("");
 	const [imagem, setImagem] = useState("");
-	noticia = noticia.GenerateNoticia(tag, titulo, dataDePublicacao, texto, tempoMedioLeitura, imagem);
+	const [criador, setCriador] = useState('');
+	const [uidCriador, setUidCriador] = useState('');
+	const [imagemAntiga, setImagemAntiga] = useState("");
+	noticia = noticia.GenerateNoticia(tag, titulo, dataDePublicacao, texto, tempoMedioLeitura, imagem, criador, uidCriador, []);
+	const service = new StorageService(); 
+
+	useEffect(() => {
+		setId(route.params != undefined ? route.params.id : '')
+		if(id != null && id.trim() != ''){
+			fetchNoticia();
+		}
+		console.log("Atualizei")
+    }, [route.params]);
+
+
+	async function reset() {
+		clearNoticia()
+	}
+
+	async function fetchNoticia() {
+        const colecao = doc(FIREBASE_DB, 'Noticias', id);
+        const colecaoSnapshot = await getDoc(colecao);
+        if (colecaoSnapshot.exists()) {
+           setDataDePublicacao(colecaoSnapshot.data().dataDePublicacao);
+		   setTag(colecaoSnapshot.data().tag);
+		   setImagem(colecaoSnapshot.data().imagem);
+		   setImagemAntiga(imagem);
+		   setTexto(colecaoSnapshot.data().texto);
+		   setTempoMedioLeitura(colecaoSnapshot.data().tempoMedioLeitura);
+		   setCriador(colecaoSnapshot.data().criador);
+		   setTitulo(colecaoSnapshot.data().titulo);
+		   setUidCriador(colecaoSnapshot.data().uidCriador);
+        }
+    }
+
+	const update = async () =>{
+		if( uidCriador === null || uidCriador == "undefined" || uidCriador.trim() == '' ){
+			alert("Você precisa estar logado para criar notícias!");
+			return;
+		}
+
+		let erros = validate();
+		if(erros.length > 0 ){
+			alert(erros.join(""))
+		}else{
+			const colecao = doc(FIREBASE_DB, 'Noticias', id);
+			if(imagem == imagemAntiga){
+				let linkImagem = await salvarImagem(imagem);
+				setImagem(linkImagem!);
+			}else{
+				
+			}
+			await updateDoc(colecao, {
+				titulo: noticia.titulo,
+				tag: noticia.tag,
+				dataDePublicacao: noticia.dataDePublicacao,
+				texto: noticia.texto,
+				tempoMedioLeitura: noticia.tempoMedioLeitura,
+				imagem: noticia.imagem,
+				criador: noticia.criador,
+				uidCriador: noticia.uidCriador,
+				curtido: noticia.curtiu
+			});
+			alert("Dados alterado com sucesso!");
+			navigation.navigate('Home');
+		}
+    }
 
 	function clearNoticia(){
 		setTag("");
 		setTitulo("");
-		setDataDePublicacao("");
+		setDataDePublicacao(currentDay());
 		setTexto("");
 		setTempoMedioLeitura("");
 		setImagem("");
+		setId("");
+		setUidCriador("");
+		setCriador("");
 	}
 
 	async function salvarImagem(image: string){
@@ -58,6 +129,20 @@ export default function NewNews() {
 	};
 
 	const salvar = async () => {
+		let nomeVar = await service.getData("nome");
+		let uidVar = await service.getData("uid");
+		
+		setCriador(nomeVar!.toString());
+		// setUidCriador(uidVar!.toString());
+		setUidCriador("tessssssste");
+		
+		if( uidCriador === null || uidCriador == "undefined" || uidCriador.trim() == '' ){
+			alert("Você precisa estar logado para criar notícias!");
+			return;
+		}
+		
+		console.log(uidCriador);
+
 		let erros = validate();
 		if(erros.length > 0 ){
 			alert(erros.join(""))
@@ -69,10 +154,15 @@ export default function NewNews() {
 				dataDePublicacao: noticia.dataDePublicacao,
 				texto: noticia.texto,
 				tempoMedioLeitura: noticia.tempoMedioLeitura,
-				imagem: linkImagem
+				imagem: linkImagem,
+				criador: noticia.criador,
+				uidCriador: noticia.uidCriador,
+				curtido: noticia.curtido
+
 			} );
 			clearNoticia();
 			alert("Noticia cadastrada!");
+			navigation.navigate("Home");
 		}
 	}
 
@@ -111,6 +201,12 @@ export default function NewNews() {
 		if (noticia.imagem == "") {
 			erros.push("\nSuba uma imagem de evidência!");
 		}
+		if (noticia.uidCriador == "") {
+			erros.push("\nCriador não encontrado!");
+		}
+		if (noticia.criador == "") {
+			erros.push("\nCriador não encontrado!");
+		}
 
 		return erros;
 	}
@@ -121,6 +217,7 @@ export default function NewNews() {
 				<Box safeArea alignItems="center" marginBottom={2} >
 					<Heading>Nova Notícia</Heading>
 					<VStack width="90%" mx="3" maxW="400px" space={1} marginTop={5}>
+						<Input isRequired isDisabled placeholder="User" value={criador} />
 						<Input isRequired placeholder="Titulo" value={titulo} onChangeText={(t) => { setTitulo(t) }} />
 						<Input isRequired placeholder="Tag" value={tag} onChangeText={(t) => { setTag(t) }} />
 						<TextArea isRequired h={20} placeholder="Texto" w="100%" maxW={500} autoCompleteType={undefined} value={texto} onChangeText={(t) => { setTexto(t) }} />
@@ -128,10 +225,12 @@ export default function NewNews() {
 						<Input isRequired isDisabled placeholder="Data de Publicação" value={dataDePublicacao} onChangeText={(t) => { setDataDePublicacao(t) }} />
 						<HStack justifyContent={"space-between"}>
 							<UploadFoto defineImage={setImagem} />
-							<Button style={styles.buttonSave} onPress={salvar} endIcon={<Icon as={Ionicons} name="save" size="sm" />}>
-								Salvar
+							<Button style={styles.buttonSave} onPress={id == null || id.trim() == '' ? salvar : update} endIcon={<Icon as={Ionicons} name="save" size="sm" />}>
+							{id == null || id.trim() == '' ? "Cadastrar" : "Atualizar"}
 							</Button>
+							<Button colorScheme="secondary" onPress={() => reset()} endIcon={<Ionicons name="trash" size={24} color="black" />}>Resetar</Button>
 						</HStack>
+						{(id != null && id.trim() != '') && <Text>Suas curtidas serão resetadas ao atualizar</Text>}
 						{imagem.trim() != '' &&
 							(
 								<View>

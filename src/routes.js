@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import NewNews from "./pages/NewNews";
+import FormNews from "./pages/FormNews";
 import CustomTabBar from "./components/CustomTabBar";
 
 const Tab = createBottomTabNavigator();
@@ -24,13 +24,13 @@ export function Routes() {
       tabBar={(props) => <CustomTabBar {...props} />}
     >
 	{/* Removido temporariamente */}
-      {/* <Tab.Screen
+      <Tab.Screen
         name="Login"
         component={Login}
         options={{
           tabBarIcon: "account",
         }}
-      /> */}
+      />
       <Tab.Screen
         name="Home"
         component={Home}
@@ -39,8 +39,8 @@ export function Routes() {
         }}
       />
       <Tab.Screen
-        name="NewNews"
-        component={NewNews}
+        name="FormNews"
+        component={FormNews}
         options={{
           tabBarIcon: "plus-circle-outline",
         }}

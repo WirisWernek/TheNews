@@ -13,7 +13,7 @@ import { Image, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import StorageService from '../../services/storage';
 import { FIREBASE_DB } from '../../../firebaseConfig';
-import { collection, deleteDoc, doc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 
 type Props = {
 	noticia: Noticia,
@@ -23,16 +23,16 @@ type Props = {
 
 export function Card({ noticia, id, navigation }: Props) {
 	const service = new StorageService(); 
-	const [criador, setCriador] = useState('');
-	const [uidCriador, setUidCriador] = useState('');
+	const [usuarioLogado, setUsuarioLogado] = useState('');
+	const [uidUsuarioLogado, setUidUsuarioLogado] = useState('');
 	
 	const getData = async () => {
 		try {
 			let nomeVar = await service.getData("nome");
 			let uidVar = await service.getData("uid");
 	
-			setCriador(nomeVar!.toString());
-			setUidCriador(uidVar!.toString());
+			setUsuarioLogado(nomeVar!.toString());
+			setUidUsuarioLogado(uidVar!.toString());
 		} catch (e) {
 			console.log(e)
 		}
@@ -52,6 +52,43 @@ export function Card({ noticia, id, navigation }: Props) {
             alert("Elemento excluido!");
         } catch (error) {
             alert("Falha ao excluir! " + error)
+        }
+	}
+
+	async function curtir(id){
+		if(uidUsuarioLogado == noticia.uidCriador){
+			alert("Você não pode curtir suas noticias");
+			return;
+		}
+		console.log("Curtindo " + id);
+		try {
+			if(noticia.curtido == undefined){
+				noticia.curtido = [];
+			}
+			
+			let found:string = noticia.curtido.find(curtiu => uidUsuarioLogado == curtiu)!;
+			if(found != undefined && found != ""){
+				alert("Você já curtiu esse item!");
+				return;
+			}else{
+				const colecao = doc(FIREBASE_DB, 'Noticias', id);
+				
+				noticia.curtido.push(uidUsuarioLogado);
+				await updateDoc(colecao, {
+					titulo: noticia.titulo,
+					tag: noticia.tag,
+					dataDePublicacao: noticia.dataDePublicacao,
+					texto: noticia.texto,
+					tempoMedioLeitura: noticia.tempoMedioLeitura,
+					imagem: noticia.imagem,
+					criador: noticia.criador,
+					uidCriador: noticia.uidCriador,
+					curtido: noticia.curtido
+				});
+				alert("Curtido com sucesso!");
+			}
+        } catch (error) {
+            alert("Falha ao Curtir! " + error)
         }
 	}
 
@@ -103,14 +140,18 @@ export function Card({ noticia, id, navigation }: Props) {
 							color: "warmGray.200"
 						}} fontWeight="400">
 							{noticia.tempoMedioLeitura}
-						</Text>
-						
+						</Text>						
 					</HStack>
 				</HStack>
-				{uidCriador == noticia.uidCriador && 
+				{uidUsuarioLogado == noticia.uidCriador && 
 					<HStack alignItems="center" space={4} justifyContent="space-around">						
 						<Button width={"30vw"} colorScheme="secondary" onPress={ () => excluir(id)}>Excluir</Button>
 						<Button width={"30vw"} onPress={ () => alterar(id)}>Editar</Button>
+					</HStack>
+				}
+				{uidUsuarioLogado != noticia.uidCriador && 
+					<HStack alignItems="center" space={4} justifyContent="space-around">						
+						<Button width={"30vw"} colorScheme="secondary" onPress={ () => curtir(id)}>{"Curtir " + noticia.curtido.length.toString() }</Button>
 					</HStack>
 				}
 			</Stack>

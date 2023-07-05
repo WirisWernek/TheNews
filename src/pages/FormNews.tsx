@@ -13,7 +13,7 @@ import {
 import UploadFoto from "../components/Card/UploadImage";
 import Noticia from "../models/Noticia";
 import { Ionicons } from "@expo/vector-icons";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
+import { Image, ScrollView, StyleSheet, View, Text } from "react-native";
 import { addDoc, collection, doc, getDoc, updateDoc } from "firebase/firestore";
 import { FIREBASE_DB, FIREBASE_STORAGE } from "../../firebaseConfig";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
@@ -32,7 +32,7 @@ export default function FormNews({ navigation, route }: any) {
 	const [criador, setCriador] = useState('');
 	const [uidCriador, setUidCriador] = useState('');
 	const [imagemAntiga, setImagemAntiga] = useState("");
-	noticia = noticia.GenerateNoticia(tag, titulo, dataDePublicacao, texto, tempoMedioLeitura, imagem, criador, uidCriador);
+	noticia = noticia.GenerateNoticia(tag, titulo, dataDePublicacao, texto, tempoMedioLeitura, imagem, criador, uidCriador, []);
 	const service = new StorageService(); 
 
 	useEffect(() => {
@@ -89,7 +89,8 @@ export default function FormNews({ navigation, route }: any) {
 				tempoMedioLeitura: noticia.tempoMedioLeitura,
 				imagem: noticia.imagem,
 				criador: noticia.criador,
-				uidCriador: noticia.uidCriador
+				uidCriador: noticia.uidCriador,
+				curtido: noticia.curtiu
 			});
 			alert("Dados alterado com sucesso!");
 			navigation.navigate('Home');
@@ -132,7 +133,8 @@ export default function FormNews({ navigation, route }: any) {
 		let uidVar = await service.getData("uid");
 		
 		setCriador(nomeVar!.toString());
-		setUidCriador(uidVar!.toString());
+		// setUidCriador(uidVar!.toString());
+		setUidCriador("tessssssste");
 		
 		if( uidCriador === null || uidCriador == "undefined" || uidCriador.trim() == '' ){
 			alert("Você precisa estar logado para criar notícias!");
@@ -154,7 +156,9 @@ export default function FormNews({ navigation, route }: any) {
 				tempoMedioLeitura: noticia.tempoMedioLeitura,
 				imagem: linkImagem,
 				criador: noticia.criador,
-				uidCriador: noticia.uidCriador
+				uidCriador: noticia.uidCriador,
+				curtido: noticia.curtido
+
 			} );
 			clearNoticia();
 			alert("Noticia cadastrada!");
@@ -226,6 +230,7 @@ export default function FormNews({ navigation, route }: any) {
 							</Button>
 							<Button colorScheme="secondary" onPress={() => reset()} endIcon={<Ionicons name="trash" size={24} color="black" />}>Resetar</Button>
 						</HStack>
+						{(id != null && id.trim() != '') && <Text>Suas curtidas serão resetadas ao atualizar</Text>}
 						{imagem.trim() != '' &&
 							(
 								<View>

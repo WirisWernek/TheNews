@@ -5,6 +5,8 @@ export default class Noticia extends Object{
 	texto: string = "";
 	tempoMedioLeitura: string = "";
 	imagem: string = "";
+	criador: string = "";
+	uidCriador: string = "";
 
 	GenerateNoticia(
 		tag: string,
@@ -12,7 +14,9 @@ export default class Noticia extends Object{
 		dataDePublicacao: string,
 		texto: string,
 		tempoMedioLeitura: string,
-		imagem: string
+		imagem: string,
+		criador: string,
+		uidCriador: string
 	) {
 		this.tag = tag;
 		this.titulo = titulo;
@@ -20,6 +24,8 @@ export default class Noticia extends Object{
 		this.texto = texto;
 		this.tempoMedioLeitura = tempoMedioLeitura;
 		this.imagem = imagem;
+		this.criador = criador;
+		this.uidCriador = uidCriador;
 		return this;
 	}
 }

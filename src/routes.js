@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import NewNews from "./pages/NewNews";
+import FormNews from "./pages/FormNews";
 import CustomTabBar from "./components/CustomTabBar";
 
 const Tab = createBottomTabNavigator();
@@ -39,8 +39,8 @@ export function Routes() {
         }}
       />
       <Tab.Screen
-        name="NewNews"
-        component={NewNews}
+        name="FormNews"
+        component={FormNews}
         options={{
           tabBarIcon: "plus-circle-outline",
         }}

@@ -6,15 +6,59 @@ import {
 	Center,
 	HStack,
 	Stack,
+	Button,
 } from 'native-base';
 import Noticia from '../../models/Noticia';
 import { Image, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import StorageService from '../../services/storage';
+import { FIREBASE_DB } from '../../../firebaseConfig';
+import { collection, deleteDoc, doc } from 'firebase/firestore';
 
 type Props = {
 	noticia: Noticia,
+	id: any,
+	navigation: any
 };
 
-export function Card({ noticia }: Props) {
+export function Card({ noticia, id, navigation }: Props) {
+	const service = new StorageService(); 
+	const [criador, setCriador] = useState('');
+	const [uidCriador, setUidCriador] = useState('');
+	
+	const getData = async () => {
+		try {
+			let nomeVar = await service.getData("nome");
+			let uidVar = await service.getData("uid");
+	
+			setCriador(nomeVar!.toString());
+			setUidCriador(uidVar!.toString());
+		} catch (e) {
+			console.log(e)
+		}
+	  };
+	
+	function alterar(id){
+		console.log("Alterando " + id);
+		navigation.navigate('FormNews', {id})
+	}
+
+	async function excluir(id){
+		console.log("Excluindo " + id);
+		try {
+            const colecao = collection(FIREBASE_DB, 'Noticias');
+            const elemento = doc(colecao, id);
+            await deleteDoc(elemento);
+            alert("Elemento excluido!");
+        } catch (error) {
+            alert("Falha ao excluir! " + error)
+        }
+	}
+
+	useEffect(() => {
+		getData();
+    }, []);
+
 	return <Box alignItems="center" safeArea marginBottom={2}>
 		<Box maxW="95%" style={styles.card} width={"95vw"}  overflow="hidden" borderColor="coolGray.200" borderWidth="1" _dark={{
 			borderColor: "coolGray.600",
@@ -60,8 +104,15 @@ export function Card({ noticia }: Props) {
 						}} fontWeight="400">
 							{noticia.tempoMedioLeitura}
 						</Text>
+						
 					</HStack>
 				</HStack>
+				{uidCriador == noticia.uidCriador && 
+					<HStack alignItems="center" space={4} justifyContent="space-around">						
+						<Button width={"30vw"} colorScheme="secondary" onPress={ () => excluir(id)}>Excluir</Button>
+						<Button width={"30vw"} onPress={ () => alterar(id)}>Editar</Button>
+					</HStack>
+				}
 			</Stack>
 		</Box>
 	</Box>;

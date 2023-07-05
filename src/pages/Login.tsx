@@ -2,38 +2,37 @@ import React, { useLayoutEffect, useState } from "react";
 import { Box, Heading, AspectRatio, Image, Text, Center, HStack, Stack, NativeBaseProvider, FlatList, Button, View } from "native-base";
 import { GoogleAuthProvider, getAuth, signInWithPopup} from "firebase/auth";
 import { StyleSheet } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import StorageService from "../services/storage";
+
 
 export default function Login() {
 	const [user, setUser] = useState();
 	const auth = getAuth();
+	const service = new StorageService();
 	
-	const loginGoogle = () => {
+	const loginGoogle = async () => {
 		var provider = new GoogleAuthProvider();
 
-		signInWithPopup(auth, provider)
-		.then((result) => {
-			// This gives you a Google Access Token. You can use it to access the Google API.
+		signInWithPopup(auth, provider).then((result) => {
 			var credential = GoogleAuthProvider.credentialFromResult(result);
-			var token = credential.accessToken;
-			// The signed-in user info.
-			setUser(result.user);
-			// IdP data available using getAdditionalUserInfo(result)
-			// ...
-			console.log(user?.providerData);
+			var token = credential?.accessToken;
+			setUser(result.user!);
+			service.storeData("nome",result.user.displayName!);
+			service.storeData( "uid", result.user.uid!);
 		}).catch((error) => {
-			// Handle Errors here.
 			var errorCode = error.code;
 			var errorMessage = error.message;
-			// The email of the user's account used.
 			var email = error.customData.email;
-			// The AuthCredential type that was used.
 			var credential = GoogleAuthProvider.credentialFromError(error);
-			// ...
 		});
+		 
 	}
 
 	const logoutGoogle = () =>{
 		setUser(undefined);
+		service.storeData("nome","");
+		service.storeData( "uid", "");
 	}
 
   return (

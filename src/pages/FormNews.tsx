@@ -133,8 +133,7 @@ export default function FormNews({ navigation, route }: any) {
 		let uidVar = await service.getData("uid");
 		
 		setCriador(nomeVar!.toString());
-		// setUidCriador(uidVar!.toString());
-		setUidCriador("tessssssste");
+		setUidCriador(uidVar!.toString());
 		
 		if( uidCriador === null || uidCriador == "undefined" || uidCriador.trim() == '' ){
 			alert("Você precisa estar logado para criar notícias!");

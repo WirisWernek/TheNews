@@ -1,8 +1,7 @@
-import React, { useLayoutEffect, useState } from "react";
-import { Box, Heading, AspectRatio, Image, Text, Center, HStack, Stack, NativeBaseProvider, FlatList, Button, View } from "native-base";
-import { GoogleAuthProvider, getAuth, signInWithPopup} from "firebase/auth";
+import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
+import { Box, Button, Heading, Image, NativeBaseProvider, Text, View } from "native-base";
+import React, { useState } from "react";
 import { StyleSheet } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import StorageService from "../services/storage";
 
 

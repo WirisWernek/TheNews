@@ -2,7 +2,7 @@
 
 É um projeto multiplataforma desenvolvido com react native com objetivo de ser uma aplicação para publicação e avaliação de notícias.
 
-## Tecnologias utilizadas:
+## Tecnologias utilizadas
 
 - React Native
 - Typescript
